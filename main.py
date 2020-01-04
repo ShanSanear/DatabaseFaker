@@ -1,7 +1,9 @@
 from faker import Faker
 from faker.generator import Generator
 import random
-from providers import DegreeProvider, TimesProvider, SourceCodeProvider, ProgrammingLanguagesProvider, FrameworkProvider
+from providers import DegreeProvider, TimesProvider, SourceCodeProvider, ProgrammingLanguagesProvider, \
+    FrameworkProvider, ApplicationProvider
+
 
 class RootModel:
     def __init__(self, **kwargs):
@@ -35,6 +37,7 @@ class FakeIt:
         self.fake.add_provider(SourceCodeProvider)
         self.fake.add_provider(ProgrammingLanguagesProvider)
         self.fake.add_provider(FrameworkProvider)
+        self.fake.add_provider(ApplicationProvider)
         self.possible_degrees = [
             'Associate of Arts',
             "Bachelor's degree",
@@ -116,6 +119,12 @@ class FakeIt:
                 framework_id += 1
         return full_frameworks
 
+    def create_applications(self):
+        apps = []
+        for idx in range(10):
+            apps.append(RootModel(**self.fake.app_module_entry()))
+        return apps
+
 
 fake_it = FakeIt()
 times = fake_it.create_times()
@@ -124,11 +133,12 @@ degrees = fake_it.create_degrees()
 teams = fake_it.create_teams()
 source_codes = fake_it.create_source_codes()
 full_frameworks = fake_it.create_full_frameworks()
+apps = fake_it.create_applications()
 print(locations)
 print(degrees)
 print(teams)
 print(times)
 print(source_codes)
-print(full_frameworks[0].check_keys())
-for e in full_frameworks:
+print(apps[0].check_keys())
+for e in apps:
     print(e)
