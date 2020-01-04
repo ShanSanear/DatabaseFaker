@@ -1,5 +1,6 @@
 import random
 import string
+from collections import defaultdict
 
 from faker import Faker
 from faker.providers import BaseProvider
@@ -113,16 +114,43 @@ class ProgrammingLanguagesProvider(BaseProvider):
 
 
 class ApplicationProvider(BaseProvider):
+    current_modules = {}
+
     def app_name(self):
         return "".join(random.choices(string.ascii_uppercase, k=random.randint(4, 6)))
 
     def app_type(self):
         return random.choice(["type A", "type B", "type C", "type D"])
 
+    def get_already_created_app(self):
+        try:
+            return random.choice(list(self.current_modules.keys()))
+        except IndexError:
+            return self.get_random_mod_name()
+
+    def get_random_mod_name(self):
+        return
+
+    def get_next_app_version(self, app_name, version):
+        position_to_increment = random.randint(0, 2)
+        version[position_to_increment] += 1
+        self.current_modules[app_name] = version
+        return ".".join([str(e) for e in version])
+
+    def get_mod_version(self, mod_name):
+        if mod_name not in self.current_modules:
+            self.current_modules[mod_name] = [0, 0, 0]
+            return [0, 0, 0]
+        return self.current_modules[mod_name]
+
     def app_module_entry(self):
+        random_mod_name = "".join(random.choices(string.ascii_uppercase, k=random.randint(4, 6)))
+        app_mod_name = random.choice([random_mod_name, self.get_already_created_app()])
+        app_version = self.get_next_app_version(app_mod_name, self.get_mod_version(app_mod_name))
+
         return {
-            "app_mod_name": "".join(random.choices(string.ascii_uppercase, k=random.randint(4, 6))),
-            "app_mod_ver": f"{random.randint(0, 10)}.{random.randint(0, 10)}.{random.randint(0, 10)}"
+            "app_mod_name": app_mod_name,
+            "app_mod_ver": app_version
         }
 
     def days_of_develop(self):
