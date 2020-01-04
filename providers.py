@@ -81,10 +81,10 @@ class FrameworkProvider(BaseProvider):
         )
 
     def framework_version(self):
-        major = 0
-        minor = 0
-        bugfix = 0
-        return f"{major}.{minor}.{bugfix}"
+        major = random.randint(1, 5)
+        minor = random.randint(1, 5)
+        bug_fix = random.randint(1, 5)
+        return f"{major}.{minor}.{bug_fix}"
 
 
 class ProgrammingLanguagesProvider(BaseProvider):
