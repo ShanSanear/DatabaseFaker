@@ -92,8 +92,23 @@ class ProgrammingLanguagesProvider(BaseProvider):
         return random.choice([
             {"prog_lang_id": 1, "prog_lang_name": "C#", "prog_lang_version": "4.3"
              },
-            {"prog_lang_id": 1, "prog_lang_name": "C", "prog_lang_version": "ANSI C 1999",
-             }]
+            {"prog_lang_id": 2, "prog_lang_name": "C", "prog_lang_version": "ANSI C 1999",
+             },
+            {"prog_lang_id": 3, "prog_lang_name": "Python", "prog_lang_version": "2.7.15",
+             },
+            {"prog_lang_id": 4, "prog_lang_name": "Python", "prog_lang_version": "3.6",
+             },
+            {"prog_lang_id": 5, "prog_lang_name": "Java", "prog_lang_version": "1.8",
+             },
+            {"prog_lang_id": 6, "prog_lang_name": "Java", "prog_lang_version": "11",
+             },
+            {"prog_lang_id": 7, "prog_lang_name": "Java", "prog_lang_version": "10",
+             },
+            {"prog_lang_id": 8, "prog_lang_name": ".Net Core", "prog_lang_version": "2.2",
+             },
+            {"prog_lang_id": 8, "prog_lang_name": ".Net Core", "prog_lang_version": "3.1",
+             }
+        ]
         )
 
 
