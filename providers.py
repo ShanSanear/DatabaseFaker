@@ -122,7 +122,7 @@ class ApplicationProvider(BaseProvider):
     def app_module_entry(self):
         return {
             "app_mod_name": "".join(random.choices(string.ascii_uppercase, k=random.randint(4, 6))),
-            "app_mod_ver": f"{random.randint(0, 10).random.randint(0, 10).random.randint(0, 10)}"
+            "app_mod_ver": f"{random.randint(0, 10)}.{random.randint(0, 10)}.{random.randint(0, 10)}"
         }
 
     def days_of_develop(self):
