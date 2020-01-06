@@ -28,8 +28,12 @@ class FakeIt:
             "Master's degree",
             "Doctoral degree"
         ]
+        self.developers = []
+        self.times = []
+        self.source_codes = []
+        self.frameworks = []
 
-    def create_locations(self):
+    def _create_locations(self):
         locations = []
         for idx in range(10):
             locations.append(
@@ -38,7 +42,7 @@ class FakeIt:
 
     def create_teams(self):
         teams_with_locations = []
-        locations = self.create_locations()
+        locations = self._create_locations()
         for idx in range(10):
             chosen_location = random.choice(locations)
             team = dict(team_id=idx, team_name=self.fake.company())
@@ -46,7 +50,7 @@ class FakeIt:
             teams_with_locations.append(team)
         return teams_with_locations
 
-    def create_degrees(self):
+    def _create_degrees(self):
         degrees = []
         for idx, degree in enumerate(self.possible_degrees):
             degrees.append(dict(degree_id=idx, degree_name=degree))
@@ -62,29 +66,32 @@ class FakeIt:
                                    team_id=dev_team.team_id, team_name=dev_team.team_name,
                                    location_id=dev_team.location_id, location_country=dev_team.location_country,
                                    location_city=dev_team.location_city))
+        self.developers = developers
         return developers
 
     def create_times(self):
         times = []
         for idx in range(10):
             times.append(dict(day_id=idx, **self.fake.full_time_entry()))
+        self.times = times
         return times
 
     def create_source_codes(self):
         source_codes = []
         for idx in range(10):
             source_codes.append(dict(code_id=idx, **self.fake.full_source_code_entry()))
+        self.source_codes = source_codes
         return source_codes
 
-    def create_programming_languages(self):
+    def _create_programming_languages(self):
         programming_languages = []
         for idx in range(10):
             programming_languages.append(dict(**self.fake.full_programming_language_entry()))
         return programming_languages
 
-    def create_frameworks(self):
+    def _create_base_frameworks(self):
         frameworks = []
-        programming_languages = self.create_programming_languages()
+        programming_languages = self._create_programming_languages()
         for idx in range(10):
             chosen_programming_language = random.choice(programming_languages)
             framework = dict(framework_id=idx, framework_name=self.fake.framework_name())
@@ -95,13 +102,15 @@ class FakeIt:
     def create_full_frameworks(self):
         full_frameworks = []
         framework_id = 0
-        frameworks = self.create_frameworks()
-        for idx, framework in enumerate(frameworks):
+        base_frameworks = self._create_base_frameworks()
+        for idx, base_framework in enumerate(base_frameworks):
             for _ in range(random.randint(4, 10)):
-                tmp = dict(framework_id=framework_id, framework_version=self.fake.framework_version())
-                tmp.update(framework)
-                full_frameworks.append(tmp)
+                framework = dict(framework_id=framework_id,
+                                 framework_version=self.fake.framework_version())
+                framework.update(base_framework)
+                full_frameworks.append(framework)
                 framework_id += 1
+        self.frameworks = full_frameworks
         return full_frameworks
 
     def create_applications(self):
@@ -115,8 +124,8 @@ def main():
     logging.basicConfig(level=logging.INFO)
     fake_it = FakeIt()
     times = fake_it.create_times()
-    locations = fake_it.create_locations()
-    degrees = fake_it.create_degrees()
+    locations = fake_it._create_locations()
+    degrees = fake_it._create_degrees()
     teams = fake_it.create_teams()
     source_codes = fake_it.create_source_codes()
     full_frameworks = fake_it.create_full_frameworks()
