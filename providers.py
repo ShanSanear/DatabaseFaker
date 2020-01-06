@@ -100,7 +100,9 @@ class TimesProvider(BaseProvider):
 
 
 class FrameworkProvider(BaseProvider):
+    created_frameworks = []
     def framework_name(self):
+        chosen_framework = pick_random_name()
         return random.choice(
             ["Framework A", "Framework B", "Framework C", "Framework D"]
         )
@@ -194,13 +196,11 @@ class ApplicationProvider(BaseProvider):
         }
 
     def random_or_already_created_mod(self, random_mod_name):
-        return random.choice([
-            random_mod_name,
-            pick_random_key_from_dict(self.current_modules, random_mod_name)
-        ])
+        population = [random_mod_name, pick_random_key_from_dict(self.current_modules, random_mod_name)]
+        weights = [0.2, 0.8]
+        return random.choices(population=population, weights=weights)[0]
 
     def random_or_already_created_app(self, random_app_name):
-        return random.choice([
-            random_app_name,
-            pick_random_key_from_dict(self.current_apps, random_app_name)
-        ])
+        population = [random_app_name, pick_random_key_from_dict(self.current_apps, random_app_name)]
+        weights = [0.1, 0.9]
+        return random.choices(population=population, weights=weights)[0]
