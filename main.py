@@ -116,7 +116,11 @@ class FakeIt:
     def create_applications(self):
         apps = []
         for idx in range(10):
-            apps.append(dict(app_id=idx, **self.fake.app_module_entry()))
+            foreign_keys = dict(dev_id=pick_random_id(self.developers, 'dev_id'),
+                                framework_id=pick_random_id(self.frameworks, 'framework_id'),
+                                day_id=pick_random_id(self.times, 'day_id'),
+                                code_id=pick_random_id(self.source_codes, 'code_id'))
+            apps.append(dict(app_id=idx, **self.fake.app_module_entry(), **foreign_keys))
         return apps
 
 
