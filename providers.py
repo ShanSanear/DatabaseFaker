@@ -22,6 +22,13 @@ def pick_random_name(characters=string.ascii_uppercase,
     return "".join(random.choices(characters, k=random.randint(lower_limit, upper_limit)))
 
 
+def pick_random_key_from_dict(dict_to_check, fallback):
+    try:
+        return random.choice(list(dict_to_check.keys()))
+    except IndexError:
+        return fallback
+
+
 class DegreeProvider(BaseProvider):
     def degree_name(self):
         return random.choice([
