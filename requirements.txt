@@ -1,3 +1,4 @@
 cx-Oracle
 faker
 pandas
+sqlalchemy
