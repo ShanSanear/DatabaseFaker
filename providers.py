@@ -139,16 +139,10 @@ class ProgrammingLanguagesProvider(BaseProvider):
 
 class ApplicationProvider(BaseProvider):
     current_modules = {}
+    current_apps = {}
 
-
-    def app_type(self):
+    def _app_type(self):
         return random.choice(["type A", "type B", "type C", "type D"])
-
-    def get_already_created_app_module(self):
-        return random.choice(list(self.current_modules.keys()))
-
-    def get_random_mod_name(self):
-        return
 
     def get_next_app_version(self, app_module, version):
         position_to_increment = random.randint(0, 2)
@@ -180,3 +174,23 @@ class ApplicationProvider(BaseProvider):
     def get_app_details(self):
         random_app_name = pick_random_name()
         random_app_name = f"APP_{random_app_name}"
+        app_name = self.random_or_already_created_app(random_app_name)
+        if app_name not in self.current_apps:
+            self.current_apps[app_name] = self._app_type()
+        app_type = self.current_apps[app_name]
+        return {
+            "app_name": app_name,
+            "app_type": app_type
+        }
+
+    def random_or_already_created_mod(self, random_mod_name):
+        return random.choice([
+            random_mod_name,
+            pick_random_key_from_dict(self.current_modules, random_mod_name)
+        ])
+
+    def random_or_already_created_app(self, random_app_name):
+        return random.choice([
+            random_app_name,
+            pick_random_key_from_dict(self.current_apps, random_app_name)
+        ])
