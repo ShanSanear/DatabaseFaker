@@ -124,13 +124,18 @@ class FakeIt:
         return apps
 
 
-logging.basicConfig(level=logging.INFO)
-fake_it = FakeIt()
-times = fake_it.create_times()
-locations = fake_it.create_locations()
-degrees = fake_it.create_degrees()
-teams = fake_it.create_teams()
-source_codes = fake_it.create_source_codes()
-full_frameworks = fake_it.create_full_frameworks()
-apps = fake_it.create_applications()
-print(apps[0]['app_id'])
+def main():
+    logging.basicConfig(level=logging.INFO)
+    fake_it = FakeIt()
+    times = fake_it.create_times()
+    locations = fake_it.create_locations()
+    degrees = fake_it.create_degrees()
+    teams = fake_it.create_teams()
+    source_codes = fake_it.create_source_codes()
+    full_frameworks = fake_it.create_full_frameworks()
+    apps = fake_it.create_applications()
+    print(apps[0]['app_id'])
+
+
+if __name__ == '__main__':
+    main()
