@@ -1,11 +1,12 @@
+import random
 import logging
 
 from faker import Faker
-import random
+import pandas as pd
 from providers import DegreeProvider, TimesProvider, SourceCodeProvider, ProgrammingLanguagesProvider
 from providers import FrameworkProvider, ApplicationProvider
 
-random.seed(123456)
+random.seed(111)
 
 
 def pick_random_id(list_to_check, id_name):
