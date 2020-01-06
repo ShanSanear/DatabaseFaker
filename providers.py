@@ -100,9 +100,8 @@ class TimesProvider(BaseProvider):
 
 
 class FrameworkProvider(BaseProvider):
-    created_frameworks = []
+
     def framework_name(self):
-        chosen_framework = pick_random_name()
         return random.choice(
             ["Framework A", "Framework B", "Framework C", "Framework D"]
         )
