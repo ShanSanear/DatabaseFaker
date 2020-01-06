@@ -126,6 +126,7 @@ class FakeIt:
             apps.append(RootModel(**self.fake.app_module_entry()))
         return apps
 
+
 logging.basicConfig(level=logging.INFO)
 fake_it = FakeIt()
 times = fake_it.create_times()
@@ -135,11 +136,3 @@ teams = fake_it.create_teams()
 source_codes = fake_it.create_source_codes()
 full_frameworks = fake_it.create_full_frameworks()
 apps = fake_it.create_applications()
-print(locations)
-print(degrees)
-print(teams)
-print(times)
-print(source_codes)
-print(apps[0].check_keys())
-for e in apps:
-    print(e)
