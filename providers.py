@@ -17,6 +17,11 @@ def pick_random_date(start_date, end_date):
     return start_date + timedelta(seconds=random_second)
 
 
+def pick_random_name(characters=string.ascii_uppercase,
+                     lower_limit=4, upper_limit=6):
+    return "".join(random.choices(characters, k=random.randint(lower_limit, upper_limit)))
+
+
 class DegreeProvider(BaseProvider):
     def degree_name(self):
         return random.choice([
@@ -128,8 +133,6 @@ class ProgrammingLanguagesProvider(BaseProvider):
 class ApplicationProvider(BaseProvider):
     current_modules = {}
 
-    def app_name(self):
-        return "".join(random.choices(string.ascii_uppercase, k=random.randint(4, 6)))
 
     def app_type(self):
         return random.choice(["type A", "type B", "type C", "type D"])
@@ -156,9 +159,7 @@ class ApplicationProvider(BaseProvider):
         return self.current_modules[mod_name]
 
     def app_module_entry(self):
-        random_mod_name = "".join(random.choices(string.ascii_uppercase,
-                                                 k=random.randint(4, 6)))
-        random_mod_name = f"MODULE_{random_mod_name}"
+        random_mod_name = f"MODULE_{pick_random_name()}"
         app_mod_name = random.choice([random_mod_name,
                                       self.get_already_created_app_module()])
         app_version = self.get_next_app_version(app_mod_name,
