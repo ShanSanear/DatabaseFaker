@@ -1,7 +1,6 @@
 import logging
 
 from faker import Faker
-from faker.generator import Generator
 import random
 from providers import DegreeProvider, TimesProvider, SourceCodeProvider, ProgrammingLanguagesProvider, \
     FrameworkProvider, ApplicationProvider
@@ -22,10 +21,8 @@ class RootModel:
     def __repr__(self):
         return str(self)
 
-    def __getattr__(self, item):
-        if item in self.data:
-            return self.data[item]
-        super(RootModel, self).__getattr__(item)
+    def __getitem__(self, item):
+        return self.data[item]
 
     def check_keys(self):
         return ",".join(self.data.keys())
@@ -123,7 +120,7 @@ class FakeIt:
     def create_applications(self):
         apps = []
         for idx in range(10):
-            apps.append(RootModel(**self.fake.app_module_entry()))
+            apps.append(RootModel(app_id=idx, **self.fake.app_module_entry()))
         return apps
 
 
@@ -136,3 +133,4 @@ teams = fake_it.create_teams()
 source_codes = fake_it.create_source_codes()
 full_frameworks = fake_it.create_full_frameworks()
 apps = fake_it.create_applications()
+print(apps[0]['app_id'])
