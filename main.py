@@ -2,30 +2,15 @@ import logging
 
 from faker import Faker
 import random
-from providers import DegreeProvider, TimesProvider, SourceCodeProvider, ProgrammingLanguagesProvider, \
-    FrameworkProvider, ApplicationProvider
+from providers import DegreeProvider, TimesProvider, SourceCodeProvider, ProgrammingLanguagesProvider
+from providers import FrameworkProvider, ApplicationProvider
+
+random.seed(123456)
 
 
-class RootModel:
-    def __init__(self, **kwargs):
-        self.data = {**kwargs}
-
-    def __add__(self, other):
-        self.data.update(other.data)
-        return self
-
-    def __str__(self):
-        # print("Data keys:", list(self.data.keys()))
-        return ",".join((str(x) for x in self.data.values()))
-
-    def __repr__(self):
-        return str(self)
-
-    def __getitem__(self, item):
-        return self.data[item]
-
-    def check_keys(self):
-        return ",".join(self.data.keys())
+def pick_random_id(list_to_check, id_name):
+    random_element = random.choice(list_to_check)
+    return random_element[id_name]
 
 
 class FakeIt:
@@ -48,7 +33,7 @@ class FakeIt:
         locations = []
         for idx in range(10):
             locations.append(
-                RootModel(location_id=idx, location_country=self.fake.country(), location_city=self.fake.city()))
+                dict(location_id=idx, location_country=self.fake.country(), location_city=self.fake.city()))
         return locations
 
     def create_teams(self):
@@ -56,14 +41,15 @@ class FakeIt:
         locations = self.create_locations()
         for idx in range(10):
             chosen_location = random.choice(locations)
-            team = RootModel(team_id=idx, team_name=self.fake.company())
-            teams_with_locations.append(team + chosen_location)
+            team = dict(team_id=idx, team_name=self.fake.company())
+            team.update(chosen_location)
+            teams_with_locations.append(team)
         return teams_with_locations
 
     def create_degrees(self):
         degrees = []
         for idx, degree in enumerate(self.possible_degrees):
-            degrees.append(RootModel(degree_id=idx, degree_name=degree))
+            degrees.append(dict(degree_id=idx, degree_name=degree))
         return degrees
 
     def create_developers(self):
@@ -71,29 +57,29 @@ class FakeIt:
         teams_with_locations = self.create_teams()
         for dev_id in range(10):
             dev_team = random.choice(teams_with_locations)
-            developers.append(RootModel(dev_id=dev_id, dev_first_name=self.fake.first_name(),
-                                        dev_last_name=self.fake.last_name(),
-                                        team_id=dev_team.team_id, team_name=dev_team.team_name,
-                                        location_id=dev_team.location_id, location_country=dev_team.location_country,
-                                        location_city=dev_team.location_city))
+            developers.append(dict(dev_id=dev_id, dev_first_name=self.fake.first_name(),
+                                   dev_last_name=self.fake.last_name(),
+                                   team_id=dev_team.team_id, team_name=dev_team.team_name,
+                                   location_id=dev_team.location_id, location_country=dev_team.location_country,
+                                   location_city=dev_team.location_city))
         return developers
 
     def create_times(self):
         times = []
         for idx in range(10):
-            times.append(RootModel(day_id=idx, **self.fake.full_time_entry()))
+            times.append(dict(day_id=idx, **self.fake.full_time_entry()))
         return times
 
     def create_source_codes(self):
         source_codes = []
         for idx in range(10):
-            source_codes.append(RootModel(code_id=idx, **self.fake.full_source_code_entry()))
+            source_codes.append(dict(code_id=idx, **self.fake.full_source_code_entry()))
         return source_codes
 
     def create_programming_languages(self):
         programming_languages = []
         for idx in range(10):
-            programming_languages.append(RootModel(**self.fake.full_programming_language_entry()))
+            programming_languages.append(dict(**self.fake.full_programming_language_entry()))
         return programming_languages
 
     def create_frameworks(self):
@@ -101,9 +87,9 @@ class FakeIt:
         programming_languages = self.create_programming_languages()
         for idx in range(10):
             chosen_programming_language = random.choice(programming_languages)
-            framework = RootModel(framework_id=idx, framework_name=self.fake.framework_name())
-            updated_framework = framework + chosen_programming_language
-            frameworks.append(updated_framework)
+            framework = dict(framework_id=idx, framework_name=self.fake.framework_name())
+            framework.update(chosen_programming_language)
+            frameworks.append(framework)
         return frameworks
 
     def create_full_frameworks(self):
@@ -112,15 +98,16 @@ class FakeIt:
         frameworks = self.create_frameworks()
         for idx, framework in enumerate(frameworks):
             for _ in range(random.randint(4, 10)):
-                full_frameworks.append(RootModel(framework_id=framework_id,
-                                                 framework_version=self.fake.framework_version()) + framework)
+                tmp = dict(framework_id=framework_id, framework_version=self.fake.framework_version())
+                tmp.update(framework)
+                full_frameworks.append(tmp)
                 framework_id += 1
         return full_frameworks
 
     def create_applications(self):
         apps = []
         for idx in range(10):
-            apps.append(RootModel(app_id=idx, **self.fake.app_module_entry()))
+            apps.append(dict(app_id=idx, **self.fake.app_module_entry()))
         return apps
 
 
@@ -134,7 +121,6 @@ def main():
     source_codes = fake_it.create_source_codes()
     full_frameworks = fake_it.create_full_frameworks()
     apps = fake_it.create_applications()
-    print(apps[0]['app_id'])
 
 
 if __name__ == '__main__':
