@@ -145,6 +145,10 @@ def create_oracle_engine():
     return create_engine(cstr, convert_unicode=False, echo=True)
 
 
+def commit_to_database(dataframe: pd.DataFrame, name, connection, schema='S83993'):
+    dataframe.to_sql(name=name, con=connection, schema=schema, if_exists='append', index=False, method='multi')
+
+
 def main():
     logging.basicConfig(level=logging.INFO)
     engine = create_oracle_engine()
@@ -156,12 +160,11 @@ def main():
     frameworks = pd.DataFrame(fake_it.create_frameworks())
     application_modules = pd.DataFrame(fake_it.create_application_modules())
     try:
-        developers.to_sql(name='developers', con=connection, schema='S83993', if_exists='append', index=False)
-        source_codes.to_sql(name='source_codes', con=connection, schema='S83993', if_exists='append', index=False)
-        frameworks.to_sql(name='frameworks', con=connection, schema='S83993', if_exists='append', index=False)
-        times.to_sql(name='times', con=connection, schema='S83993', if_exists='append', index=False)
-        application_modules.to_sql(name='application_modules', con=connection, schema='S83993', if_exists='append',
-                                   index=False)
+        commit_to_database(developers, 'developers', connection)
+        commit_to_database(source_codes, 'source_codes', connection)
+        commit_to_database(frameworks, 'frameworks', connection)
+        commit_to_database(times, 'times', connection)
+        commit_to_database(application_modules, 'application_modules', connection)
     except Exception as err:
         logging.error(err)
         raise err
