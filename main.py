@@ -163,11 +163,11 @@ def main():
     frameworks = pd.DataFrame(fake_it.create_frameworks())
     application_modules = pd.DataFrame(fake_it.create_application_modules())
     try:
-        commit_to_database(developers, 'DEVELOPERS', connection)
-        commit_to_database(source_codes, 'SOURCE_CODES', connection)
-        commit_to_database(frameworks, 'FRAMEWORKS', connection)
-        commit_to_database(times, 'TIMES', connection)
-        commit_to_database(application_modules, 'APPLICATION_MODULES', connection)
+        commit_to_database(developers, 'developers', connection)
+        commit_to_database(source_codes, 'source_codes', connection)
+        commit_to_database(frameworks, 'frameworks', connection)
+        commit_to_database(times, 'times', connection)
+        commit_to_database(application_modules, 'application_modules', connection)
     except Exception as err:
         logging.error(err)
         raise err
