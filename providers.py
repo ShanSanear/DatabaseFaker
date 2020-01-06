@@ -172,3 +172,7 @@ class ApplicationProvider(BaseProvider):
 
     def days_of_develop(self):
         return random.randint(10, 256)
+
+    def get_app_details(self):
+        random_app_name = pick_random_name()
+        random_app_name = f"APP_{random_app_name}"
