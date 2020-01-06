@@ -41,6 +41,28 @@ class FakeIt:
                 dict(location_id=idx, location_country=self.fake.country(), location_city=self.fake.city()))
         return locations
 
+    def _create_base_frameworks(self):
+        frameworks = []
+        programming_languages = self._create_programming_languages()
+        for idx in range(10):
+            chosen_programming_language = random.choice(programming_languages)
+            framework = dict(framework_id=idx, framework_name=self.fake.framework_name())
+            framework.update(chosen_programming_language)
+            frameworks.append(framework)
+        return frameworks
+
+    def _create_programming_languages(self):
+        programming_languages = []
+        for idx in range(10):
+            programming_languages.append(dict(**self.fake.full_programming_language_entry()))
+        return programming_languages
+
+    def _create_degrees(self):
+        degrees = []
+        for idx, degree in enumerate(self.possible_degrees):
+            degrees.append(dict(degree_id=idx, degree_name=degree))
+        return degrees
+
     def create_teams(self):
         teams_with_locations = []
         locations = self._create_locations()
@@ -50,12 +72,6 @@ class FakeIt:
             team.update(chosen_location)
             teams_with_locations.append(team)
         return teams_with_locations
-
-    def _create_degrees(self):
-        degrees = []
-        for idx, degree in enumerate(self.possible_degrees):
-            degrees.append(dict(degree_id=idx, degree_name=degree))
-        return degrees
 
     def create_developers(self):
         developers = []
@@ -83,22 +99,6 @@ class FakeIt:
             source_codes.append(dict(code_id=idx, **self.fake.full_source_code_entry()))
         self.source_codes = source_codes
         return source_codes
-
-    def _create_programming_languages(self):
-        programming_languages = []
-        for idx in range(10):
-            programming_languages.append(dict(**self.fake.full_programming_language_entry()))
-        return programming_languages
-
-    def _create_base_frameworks(self):
-        frameworks = []
-        programming_languages = self._create_programming_languages()
-        for idx in range(10):
-            chosen_programming_language = random.choice(programming_languages)
-            framework = dict(framework_id=idx, framework_name=self.fake.framework_name())
-            framework.update(chosen_programming_language)
-            frameworks.append(framework)
-        return frameworks
 
     def create_frameworks(self):
         full_frameworks = []
