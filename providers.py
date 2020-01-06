@@ -80,11 +80,11 @@ class TimesProvider(BaseProvider):
         super().__init__(*args, **kwargs)
         logging.info("Initializing time provider")
         self.start_date = datetime(year=2005, month=1, day=1)
-        self.end_date = datetime(year=2005, month=1, day=30)
+        self.end_date = datetime(year=2005, month=1, day=10)
 
     def full_time_entry(self):
         picked_date = pick_random_date(self.start_date, self.end_date)
-        next_date = timedelta(days=30)
+        next_date = timedelta(days=10)
         self.start_date, self.end_date = (picked_date,
                                           picked_date + next_date)
 

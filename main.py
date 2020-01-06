@@ -155,8 +155,8 @@ def main():
     logging.basicConfig(level=logging.INFO)
     engine = create_oracle_engine()
     connection = engine.connect()
-    fake_it = FakeIt(num_of_developers=350, num_of_frameworks=15, num_of_framework_versions=8,
-                     num_of_teams=10, num_of_app_modules=2000)
+    fake_it = FakeIt(num_of_developers=250, num_of_frameworks=15, num_of_framework_versions=8,
+                     num_of_teams=10, num_of_app_modules=1200)
     times = pd.DataFrame(fake_it.create_times())
     developers = pd.DataFrame(fake_it.create_developers())
     source_codes = pd.DataFrame(fake_it.create_source_codes())
