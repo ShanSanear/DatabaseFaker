@@ -1,3 +1,5 @@
+import logging
+
 from faker import Faker
 from faker.generator import Generator
 import random
@@ -79,7 +81,6 @@ class FakeIt:
                                         location_city=dev_team.location_city))
         return developers
 
-
     def create_times(self):
         times = []
         for idx in range(10):
@@ -103,7 +104,7 @@ class FakeIt:
         programming_languages = self.create_programming_languages()
         for idx in range(10):
             chosen_programming_language = random.choice(programming_languages)
-            framework = RootModel(framework_name=self.fake.framework_name())
+            framework = RootModel(framework_id=idx, framework_name=self.fake.framework_name())
             updated_framework = framework + chosen_programming_language
             frameworks.append(updated_framework)
         return frameworks
