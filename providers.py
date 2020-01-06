@@ -84,7 +84,6 @@ class TimesProvider(BaseProvider):
 
     def full_time_entry(self):
         picked_date = pick_random_date(self.start_date, self.end_date)
-        logging.info("Picked date: %s", picked_date)
         next_date = timedelta(days=30)
         self.start_date, self.end_date = (picked_date,
                                           picked_date + next_date)
