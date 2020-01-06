@@ -19,7 +19,8 @@ def pick_random_id(list_to_check, id_name):
 
 
 class FakeIt:
-    def __init__(self, num_of_developers=10, num_of_teams=10, num_of_frameworks=10, num_of_app_modules=10):
+    def __init__(self, num_of_developers=10, num_of_teams=10, num_of_frameworks=10, num_of_framework_versions=8,
+                 num_of_app_modules=10):
         self.fake = Faker()
         self.fake.add_provider(DegreeProvider)
         self.fake.add_provider(TimesProvider)
@@ -41,6 +42,7 @@ class FakeIt:
         self.num_of_teams = num_of_teams
         self.num_of_frameworks = num_of_frameworks
         self.num_of_app_modules = num_of_app_modules
+        self.num_of_framework_versions = num_of_framework_versions
 
     def _create_locations(self):
         locations = []
@@ -113,7 +115,7 @@ class FakeIt:
         framework_id = 0
         base_frameworks = self._create_base_frameworks()
         for idx, base_framework in enumerate(base_frameworks):
-            for _ in range(random.randint(4, 10)):
+            for _ in range(random.randint(4, self.num_of_framework_versions)):
                 framework = dict(framework_id=framework_id,
                                  framework_version=self.fake.framework_version())
                 framework.update(base_framework)
@@ -146,25 +148,26 @@ def create_oracle_engine():
 
 
 def commit_to_database(dataframe: pd.DataFrame, name, connection, schema='S83993'):
-    dataframe.to_sql(name=name, con=connection, schema=schema, if_exists='append', index=False, method='multi')
+    dataframe.to_sql(name=name, con=connection, schema=schema, if_exists='append', index=False)
 
 
 def main():
     logging.basicConfig(level=logging.INFO)
     engine = create_oracle_engine()
     connection = engine.connect()
-    fake_it = FakeIt(num_of_developers=150, num_of_frameworks=15, num_of_teams=10, num_of_app_modules=2000)
+    fake_it = FakeIt(num_of_developers=350, num_of_frameworks=15, num_of_framework_versions=8,
+                     num_of_teams=10, num_of_app_modules=2000)
     times = pd.DataFrame(fake_it.create_times())
     developers = pd.DataFrame(fake_it.create_developers())
     source_codes = pd.DataFrame(fake_it.create_source_codes())
     frameworks = pd.DataFrame(fake_it.create_frameworks())
     application_modules = pd.DataFrame(fake_it.create_application_modules())
     try:
-        commit_to_database(developers, 'developers', connection)
-        commit_to_database(source_codes, 'source_codes', connection)
-        commit_to_database(frameworks, 'frameworks', connection)
-        commit_to_database(times, 'times', connection)
-        commit_to_database(application_modules, 'application_modules', connection)
+        commit_to_database(developers, 'DEVELOPERS', connection)
+        commit_to_database(source_codes, 'SOURCE_CODES', connection)
+        commit_to_database(frameworks, 'FRAMEWORKS', connection)
+        commit_to_database(times, 'TIMES', connection)
+        commit_to_database(application_modules, 'APPLICATION_MODULES', connection)
     except Exception as err:
         logging.error(err)
         raise err
