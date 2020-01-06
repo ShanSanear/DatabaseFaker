@@ -50,7 +50,7 @@ class FakeIt:
         programming_languages = self._create_programming_languages()
         for idx in range(10):
             chosen_programming_language = random.choice(programming_languages)
-            framework = dict(framework_id=idx, framework_name=self.fake.framework_name())
+            framework = dict(framework_name=self.fake.framework_name())
             framework.update(chosen_programming_language)
             frameworks.append(framework)
         return frameworks
@@ -93,7 +93,7 @@ class FakeIt:
     def create_times(self):
         times = []
         for idx in range(10):
-            times.append(dict(day_id=idx, **self.fake.full_time_entry()))
+            times.append(self.fake.full_time_entry())
         self.times = times
         return times
 
@@ -118,14 +118,14 @@ class FakeIt:
         self.frameworks = full_frameworks
         return full_frameworks
 
-    def create_applications(self):
+    def create_application_modules(self):
         apps = []
         for idx in range(10):
             foreign_keys = dict(dev_id=pick_random_id(self.developers, 'dev_id'),
                                 framework_id=pick_random_id(self.frameworks, 'framework_id'),
-                                day_id=pick_random_id(self.times, 'day_id'),
+                                day_id=self.times[idx]['day_id'],
                                 code_id=pick_random_id(self.source_codes, 'code_id'))
-            apps.append(dict(app_id=idx, **self.fake.app_module_entry(), **foreign_keys))
+            apps.append(dict(APP_MOD_ID=idx, **self.fake.app_module_entry(), **foreign_keys))
         return apps
 
 
@@ -142,17 +142,28 @@ def create_oracle_engine():
 
 def main():
     logging.basicConfig(level=logging.INFO)
+    engine = create_oracle_engine()
+    connection = engine.connect()
     fake_it = FakeIt()
     times = pd.DataFrame(fake_it.create_times())
-    print(times)
     developers = pd.DataFrame(fake_it.create_developers())
-    print(developers)
     source_codes = pd.DataFrame(fake_it.create_source_codes())
-    print(source_codes)
     frameworks = pd.DataFrame(fake_it.create_frameworks())
-    print(frameworks)
-    apps = pd.DataFrame(fake_it.create_applications())
-    print(apps)
+    application_modules = pd.DataFrame(fake_it.create_application_modules())
+    try:
+        developers.to_sql(name='developers', con=connection, schema='S83993', if_exists='append', index=False)
+        source_codes.to_sql(name='source_codes', con=connection, schema='S83993', if_exists='append', index=False)
+        frameworks.to_sql(name='frameworks', con=connection, schema='S83993', if_exists='append', index=False)
+        times.to_sql(name='times', con=connection, schema='S83993', if_exists='append', index=False)
+        application_modules.to_sql(name='application_modules', con=connection, schema='S83993', if_exists='append',
+                                   index=False)
+    except Exception as err:
+        logging.error(err)
+        raise err
+    finally:
+        connection.close()
+        engine.dispose()
+
 
 if __name__ == '__main__':
     main()
