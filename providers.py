@@ -134,7 +134,7 @@ class ApplicationProvider(BaseProvider):
     def app_type(self):
         return random.choice(["type A", "type B", "type C", "type D"])
 
-    def get_already_created_app(self):
+    def get_already_created_app_module(self):
         try:
             return random.choice(list(self.current_modules.keys()))
         except IndexError:
@@ -143,10 +143,10 @@ class ApplicationProvider(BaseProvider):
     def get_random_mod_name(self):
         return
 
-    def get_next_app_version(self, app_name, version):
+    def get_next_app_version(self, app_module, version):
         position_to_increment = random.randint(0, 2)
         version[position_to_increment] += 1
-        self.current_modules[app_name] = version
+        self.current_modules[app_module] = version
         return ".".join([str(e) for e in version])
 
     def get_mod_version(self, mod_name):
@@ -156,13 +156,17 @@ class ApplicationProvider(BaseProvider):
         return self.current_modules[mod_name]
 
     def app_module_entry(self):
-        random_mod_name = "".join(random.choices(string.ascii_uppercase, k=random.randint(4, 6)))
-        app_mod_name = random.choice([random_mod_name, self.get_already_created_app()])
-        app_version = self.get_next_app_version(app_mod_name, self.get_mod_version(app_mod_name))
+        random_mod_name = "".join(random.choices(string.ascii_uppercase,
+                                                 k=random.randint(4, 6)))
+        random_mod_name = f"MODULE_{random_mod_name}"
+        app_mod_name = random.choice([random_mod_name,
+                                      self.get_already_created_app_module()])
+        app_version = self.get_next_app_version(app_mod_name,
+                                                self.get_mod_version(app_mod_name))
 
         return {
             "app_mod_name": app_mod_name,
-            "app_mod_ver": app_version
+            "app_mod_ver": app_version,
         }
 
     def days_of_develop(self):
