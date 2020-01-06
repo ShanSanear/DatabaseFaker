@@ -1,3 +1,4 @@
+import logging
 import random
 import string
 from collections import defaultdict
@@ -62,9 +63,20 @@ class SourceCodeProvider(BaseProvider):
 
 
 class TimesProvider(BaseProvider):
-    def full_time_entry(self, start_date=datetime(year=2005, month=1, day=1),
-                        end_date=datetime(year=2010, month=12, day=31)):
-        picked_date = pick_random_date(start_date, end_date)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        logging.info("Initializing time provider")
+        self.start_date = datetime(year=2005, month=1, day=1)
+        self.end_date = datetime(year=2005, month=1, day=30)
+
+    def full_time_entry(self):
+        picked_date = pick_random_date(self.start_date, self.end_date)
+        logging.info("Picked date: %s", picked_date)
+        next_date = timedelta(days=30)
+        self.start_date, self.end_date = (picked_date,
+                                          picked_date + next_date)
+
         return {
             "year": picked_date.year,
             "month": picked_date.month,
