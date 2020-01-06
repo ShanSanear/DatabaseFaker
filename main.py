@@ -19,7 +19,7 @@ def pick_random_id(list_to_check, id_name):
 
 
 class FakeIt:
-    def __init__(self):
+    def __init__(self, num_of_developers=10, num_of_teams=10, num_of_frameworks=10, num_of_app_modules=10):
         self.fake = Faker()
         self.fake.add_provider(DegreeProvider)
         self.fake.add_provider(TimesProvider)
@@ -37,10 +37,14 @@ class FakeIt:
         self.times = []
         self.source_codes = []
         self.frameworks = []
+        self.num_of_developers = num_of_developers
+        self.num_of_teams = num_of_teams
+        self.num_of_frameworks = num_of_frameworks
+        self.num_of_app_modules = num_of_app_modules
 
     def _create_locations(self):
         locations = []
-        for idx in range(10):
+        for idx in range(self.num_of_teams):
             locations.append(
                 dict(location_id=idx, location_country=self.fake.country(), location_city=self.fake.city()))
         return locations
@@ -48,7 +52,7 @@ class FakeIt:
     def _create_base_frameworks(self):
         frameworks = []
         programming_languages = self._create_programming_languages()
-        for idx in range(10):
+        for idx in range(self.num_of_frameworks):
             chosen_programming_language = random.choice(programming_languages)
             framework = dict(framework_name=self.fake.framework_name())
             framework.update(chosen_programming_language)
@@ -70,7 +74,7 @@ class FakeIt:
     def create_teams(self):
         teams_with_locations = []
         locations = self._create_locations()
-        for idx in range(10):
+        for idx in range(self.num_of_teams):
             chosen_location = random.choice(locations)
             team = dict(team_id=idx, team_name=self.fake.company())
             team.update(chosen_location)
@@ -81,7 +85,7 @@ class FakeIt:
         developers = []
         teams_with_locations = self.create_teams()
         degrees = self._create_degrees()
-        for dev_id in range(10):
+        for dev_id in range(self.num_of_developers):
             dev_team = random.choice(teams_with_locations)
             dev_degree = random.choice(degrees)
             developers.append(dict(dev_id=dev_id, dev_first_name=self.fake.first_name(),
@@ -92,14 +96,14 @@ class FakeIt:
 
     def create_times(self):
         times = []
-        for idx in range(10):
+        for idx in range(self.num_of_app_modules):
             times.append(self.fake.full_time_entry())
         self.times = times
         return times
 
     def create_source_codes(self):
         source_codes = []
-        for idx in range(10):
+        for idx in range(self.num_of_app_modules):
             source_codes.append(dict(code_id=idx, **self.fake.full_source_code_entry()))
         self.source_codes = source_codes
         return source_codes
@@ -120,11 +124,12 @@ class FakeIt:
 
     def create_application_modules(self):
         apps = []
-        for idx in range(10):
+        for idx in range(self.num_of_app_modules):
             foreign_keys = dict(dev_id=pick_random_id(self.developers, 'dev_id'),
                                 framework_id=pick_random_id(self.frameworks, 'framework_id'),
                                 day_id=self.times[idx]['day_id'],
-                                code_id=pick_random_id(self.source_codes, 'code_id'))
+                                code_id=pick_random_id(self.source_codes, 'code_id'),
+                                days_of_develop=self.fake.days_of_develop())
             apps.append(dict(APP_MOD_ID=idx, **self.fake.app_module_entry(), **foreign_keys))
         return apps
 
@@ -144,7 +149,7 @@ def main():
     logging.basicConfig(level=logging.INFO)
     engine = create_oracle_engine()
     connection = engine.connect()
-    fake_it = FakeIt()
+    fake_it = FakeIt(num_of_developers=150, num_of_frameworks=15, num_of_teams=10, num_of_app_modules=2000)
     times = pd.DataFrame(fake_it.create_times())
     developers = pd.DataFrame(fake_it.create_developers())
     source_codes = pd.DataFrame(fake_it.create_source_codes())
