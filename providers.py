@@ -90,12 +90,13 @@ class TimesProvider(BaseProvider):
                                           picked_date + next_date)
 
         return {
+            "day_id": picked_date,
             "year": picked_date.year,
             "month": picked_date.month,
             "month_desc": picked_date.strftime("%B"),
             "day": picked_date.day,
             "hour": picked_date.hour,
-            "week_num": picked_date.strftime("%U"),
+            "week_num": int(picked_date.strftime("%U")),
         }
 
 
@@ -138,11 +139,21 @@ class ProgrammingLanguagesProvider(BaseProvider):
 
 
 class ApplicationProvider(BaseProvider):
-    current_modules = {}
-    current_apps = {}
 
-    def _app_type(self):
-        return random.choice(["type A", "type B", "type C", "type D"])
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.current_modules = {}
+        self.current_apps = {}
+        self.current_app_id = 0
+
+    def _app_info(self):
+        app_type = random.choice(["type A", "type B", "type C", "type D"])
+        app_id = self.current_app_id
+        self.current_app_id += 1
+        return {
+            "app_id": app_id,
+            "app_type": app_type
+        }
 
     def get_next_app_version(self, app_module, version):
         position_to_increment = random.randint(0, 2)
@@ -176,11 +187,11 @@ class ApplicationProvider(BaseProvider):
         random_app_name = f"APP_{random_app_name}"
         app_name = self.random_or_already_created_app(random_app_name)
         if app_name not in self.current_apps:
-            self.current_apps[app_name] = self._app_type()
-        app_type = self.current_apps[app_name]
+            self.current_apps[app_name] = self._app_info()
+        app_info = self.current_apps[app_name]
         return {
             "app_name": app_name,
-            "app_type": app_type
+            **app_info
         }
 
     def random_or_already_created_mod(self, random_mod_name):
