@@ -1,8 +1,12 @@
+import os
 import random
 import logging
 
+import cx_Oracle
 from faker import Faker
 import pandas as pd
+from sqlalchemy import create_engine
+
 from providers import DegreeProvider, TimesProvider, SourceCodeProvider, ProgrammingLanguagesProvider
 from providers import FrameworkProvider, ApplicationProvider
 
@@ -123,6 +127,17 @@ class FakeIt:
                                 code_id=pick_random_id(self.source_codes, 'code_id'))
             apps.append(dict(app_id=idx, **self.fake.app_module_entry(), **foreign_keys))
         return apps
+
+
+def create_oracle_engine():
+    sid_name = "orclwh"
+    port = 1522
+    database_ip = "217.173.198.136"
+    username = os.getenv("DB_USERNAME")
+    password = os.getenv("DB_PASSWORD")
+    sid = cx_Oracle.makedsn(database_ip, port, sid=sid_name)
+    cstr = f'oracle://{username}:{password}@{sid}'
+    return create_engine(cstr, convert_unicode=False, echo=True)
 
 
 def main():
