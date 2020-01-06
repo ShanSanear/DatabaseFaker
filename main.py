@@ -60,13 +60,13 @@ class FakeIt:
     def create_developers(self):
         developers = []
         teams_with_locations = self.create_teams()
+        degrees = self._create_degrees()
         for dev_id in range(10):
             dev_team = random.choice(teams_with_locations)
+            dev_degree = random.choice(degrees)
             developers.append(dict(dev_id=dev_id, dev_first_name=self.fake.first_name(),
                                    dev_last_name=self.fake.last_name(),
-                                   team_id=dev_team.team_id, team_name=dev_team.team_name,
-                                   location_id=dev_team.location_id, location_country=dev_team.location_country,
-                                   location_city=dev_team.location_city))
+                                   **dev_degree, **dev_team))
         self.developers = developers
         return developers
 
@@ -100,7 +100,7 @@ class FakeIt:
             frameworks.append(framework)
         return frameworks
 
-    def create_full_frameworks(self):
+    def create_frameworks(self):
         full_frameworks = []
         framework_id = 0
         base_frameworks = self._create_base_frameworks()
@@ -128,14 +128,16 @@ class FakeIt:
 def main():
     logging.basicConfig(level=logging.INFO)
     fake_it = FakeIt()
-    times = fake_it.create_times()
-    locations = fake_it._create_locations()
-    degrees = fake_it._create_degrees()
-    teams = fake_it.create_teams()
-    source_codes = fake_it.create_source_codes()
-    full_frameworks = fake_it.create_full_frameworks()
-    apps = fake_it.create_applications()
-
+    times = pd.DataFrame(fake_it.create_times())
+    print(times)
+    developers = pd.DataFrame(fake_it.create_developers())
+    print(developers)
+    source_codes = pd.DataFrame(fake_it.create_source_codes())
+    print(source_codes)
+    frameworks = pd.DataFrame(fake_it.create_frameworks())
+    print(frameworks)
+    apps = pd.DataFrame(fake_it.create_applications())
+    print(apps)
 
 if __name__ == '__main__':
     main()
