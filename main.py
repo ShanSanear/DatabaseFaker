@@ -126,7 +126,7 @@ class FakeIt:
             apps.append(RootModel(**self.fake.app_module_entry()))
         return apps
 
-
+logging.basicConfig(level=logging.INFO)
 fake_it = FakeIt()
 times = fake_it.create_times()
 locations = fake_it.create_locations()
