@@ -5,7 +5,7 @@ import logging
 import cx_Oracle
 from faker import Faker
 import pandas as pd
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, types
 
 from providers import DegreeProvider, TimesProvider, SourceCodeProvider, ProgrammingLanguagesProvider
 from providers import FrameworkProvider, ApplicationProvider
@@ -45,6 +45,7 @@ class FakeIt:
         self.num_of_framework_versions = num_of_framework_versions
 
     def _create_locations(self):
+        logging.info("Creating locations")
         locations = []
         for idx in range(self.num_of_teams):
             locations.append(
@@ -52,6 +53,7 @@ class FakeIt:
         return locations
 
     def _create_base_frameworks(self):
+        logging.info("Creating base frameworks")
         frameworks = []
         programming_languages = self._create_programming_languages()
         for idx in range(self.num_of_frameworks):
@@ -62,28 +64,32 @@ class FakeIt:
         return frameworks
 
     def _create_programming_languages(self):
+        logging.info("Creating programming languages")
         programming_languages = []
         for idx in range(10):
             programming_languages.append(dict(**self.fake.full_programming_language_entry()))
         return programming_languages
 
     def _create_degrees(self):
+        logging.info("Creating degrees")
         degrees = []
         for idx, degree in enumerate(self.possible_degrees):
             degrees.append(dict(degree_id=idx, degree_name=degree))
         return degrees
 
     def create_teams(self):
+        logging.info("Creating teams")
         teams_with_locations = []
         locations = self._create_locations()
         for idx in range(self.num_of_teams):
             chosen_location = random.choice(locations)
-            team = dict(team_id=idx, team_name=self.fake.company())
+            team = dict(team_id=idx, team_name=self.fake.company()[:25])
             team.update(chosen_location)
             teams_with_locations.append(team)
         return teams_with_locations
 
     def create_developers(self):
+        logging.info("Creating developers")
         developers = []
         teams_with_locations = self.create_teams()
         degrees = self._create_degrees()
@@ -97,6 +103,7 @@ class FakeIt:
         return developers
 
     def create_times(self):
+        logging.info("Creating times")
         times = []
         for idx in range(self.num_of_app_modules):
             times.append(self.fake.full_time_entry())
@@ -104,6 +111,7 @@ class FakeIt:
         return times
 
     def create_source_codes(self):
+        logging.info("Creating source codes")
         source_codes = []
         for idx in range(self.num_of_app_modules):
             source_codes.append(dict(code_id=idx, **self.fake.full_source_code_entry()))
@@ -111,6 +119,7 @@ class FakeIt:
         return source_codes
 
     def create_frameworks(self):
+        logging.info("Creating complete frameworks")
         full_frameworks = []
         framework_id = 0
         base_frameworks = self._create_base_frameworks()
@@ -125,6 +134,7 @@ class FakeIt:
         return full_frameworks
 
     def create_application_modules(self):
+        logging.info("Creating application modules")
         apps = []
         for idx in range(self.num_of_app_modules):
             foreign_keys = dict(dev_id=pick_random_id(self.developers, 'dev_id'),
@@ -137,6 +147,7 @@ class FakeIt:
 
 
 def create_oracle_engine():
+    logging.info("Creating DB engine")
     sid_name = "orclwh"
     port = 1522
     database_ip = "217.173.198.136"
@@ -144,19 +155,23 @@ def create_oracle_engine():
     password = os.getenv("DB_PASSWORD")
     sid = cx_Oracle.makedsn(database_ip, port, sid=sid_name)
     cstr = f'oracle://{username}:{password}@{sid}'
-    return create_engine(cstr, convert_unicode=False, echo=True)
+    return create_engine(cstr, convert_unicode=False, echo=False)
 
 
 def commit_to_database(dataframe: pd.DataFrame, name, connection, schema='S83993'):
-    dataframe.to_sql(name=name, con=connection, schema=schema, if_exists='append', index=False)
+    logging.info("Commiting to database table: %s", name)
+    dtyp = {c: types.VARCHAR(dataframe[c].str.len().max())
+            for c in dataframe.columns[dataframe.dtypes == 'object'].tolist()}
+    dataframe.to_sql(name=name, con=connection, schema=schema, if_exists='append', index=False, dtype=dtyp)
 
 
 def main():
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+                        datefmt='%Y-%m-%d %H:%M:%S')
     engine = create_oracle_engine()
     connection = engine.connect()
-    fake_it = FakeIt(num_of_developers=250, num_of_frameworks=15, num_of_framework_versions=8,
-                     num_of_teams=10, num_of_app_modules=1200)
+    fake_it = FakeIt(num_of_developers=10, num_of_frameworks=2, num_of_framework_versions=8,
+                     num_of_teams=10, num_of_app_modules=50)
     times = pd.DataFrame(fake_it.create_times())
     developers = pd.DataFrame(fake_it.create_developers())
     source_codes = pd.DataFrame(fake_it.create_source_codes())
